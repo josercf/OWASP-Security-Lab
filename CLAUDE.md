@@ -93,7 +93,7 @@ dotnet test
 
 ```
 ┌─────────────────────────────────────────┐
-│         Browser (localhost:5000)        │
+│         Browser (localhost:8080)        │
 └─────────────────┬───────────────────────┘
                   │ HTTP
 ┌─────────────────▼───────────────────────┐
@@ -331,7 +331,7 @@ View logs: `docker-compose logs -f webapp`
 
 - **PostgreSQL Identifiers**: Always use double quotes for table/column names: `"Product"`, `"Name"`
 - **.NET 10**: Uses preview/RC SDK, may have breaking changes
-- **Port 8080**: Container exposes 8080, mapped to 5000 on host
+- **Port 8080**: Container exposes 8080, mapped to 8080 on host
 - **Kestrel**: Web server runs on port 8080 inside container
 - **Hot Reload**: Use `dotnet watch` for development, or rebuild Docker image
 
@@ -372,8 +372,8 @@ docker-compose logs webapp
 # Rebuild image
 docker-compose up -d --build webapp
 
-# Check if port 5000 is already in use
-lsof -i :5000
+# Check if port 8080 is already in use
+lsof -i :8080
 ```
 
 ### Changes not reflecting

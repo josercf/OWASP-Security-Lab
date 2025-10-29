@@ -44,7 +44,7 @@ O OWASP Security Lab é uma aplicação web desenvolvida em ASP.NET Core (.NET 1
    ```
 
 3. **Acesse a aplicação**
-   - 🌐 **Web App**: http://localhost:5000
+   - 🌐 **Web App**: http://localhost:8080
    - 🗄️ **PgAdmin** (opcional): http://localhost:5050
      - Email: `admin@owasplab.local`
      - Senha: `admin123`
@@ -128,7 +128,7 @@ Se você preferir executar localmente sem Docker:
    ```
 
 4. **Acesse**
-   - http://localhost:5000 (ou a porta indicada no console)
+   - http://localhost:8080 (ou a porta indicada no console)
 
 ### Build Manual
 

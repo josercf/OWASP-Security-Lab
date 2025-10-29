@@ -35,7 +35,7 @@ services:
     container_name: owasp-lab-webapp
     restart: unless-stopped
     ports:
-      - "5000:8080"
+      - "8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
