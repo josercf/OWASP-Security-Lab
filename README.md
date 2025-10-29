@@ -91,23 +91,36 @@ Os scripts de inicialização estão em `database/init/` e são executados autom
 
 ### ✅ A03:2021 - Injection (SQL Injection)
 
-**Status**: Disponível
+**Status**: 🟢 Disponível (Versões Vulnerável + Segura)
 **Página**: `/A03-Injection/SqlInjection`
 
-Demonstra vulnerabilidades de SQL Injection através de consultas não parametrizadas.
+Demonstra vulnerabilidades de SQL Injection através de consultas não parametrizadas, com **toggle interativo** para alternar entre código vulnerável e seguro.
+
+**Funcionalidades**:
+- 🔓 **Modo Vulnerável**: Demonstra SQL Injection ativo
+- 🔒 **Modo Seguro**: Mostra implementação com consultas parametrizadas
+- 📊 **Comparação de Código**: Visualiza as diferenças lado a lado
+- 🔍 **Query Viewer**: Exibe a query SQL executada em tempo real
+- 🎓 **Payloads Educacionais**: Exemplos de ataques para testar
 
 **Objetivos de Aprendizado**:
 - Entender como ataques de SQL Injection funcionam
 - Explorar diferentes payloads de injeção
-- Comparar código vulnerável vs. código seguro
-- Aprender sobre consultas parametrizadas
+- Comparar código vulnerável vs. código seguro em tempo real
+- Aprender sobre consultas parametrizadas e sua efetividade
+- Ver na prática como a proteção funciona
 
-**Payloads de Teste**:
+**Payloads de Teste (Modo Vulnerável)**:
 ```sql
-' OR '1'='1
-' OR 1=1 --
-' UNION SELECT "Id","Name","Password" FROM "Users" --
+' OR '1'='1              # Retorna todos os produtos
+' OR 1=1 --              # Bypass do filtro
+' UNION SELECT "Id","Name","Password" FROM "Users" --  # Exfiltração de dados
 ```
+
+**Experimente**:
+1. Teste os payloads no **modo vulnerável** e veja os ataques funcionarem
+2. Alterne para **modo seguro** e teste os mesmos payloads
+3. Observe como a parametrização bloqueia todos os ataques
 
 **Documentação**: [A03-SQL-Injection.md](./docs/labs/A03-SQL-Injection.md)
 

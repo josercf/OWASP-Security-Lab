@@ -18,45 +18,55 @@
 
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1>🔓 A03:2021 - SQL Injection</h1>
-            <p class="lead">Exploração de consultas SQL sem parametrização adequada.</p>
+            <h1>@(Model.IsSecureMode ? "🔒" : "🔓") A03:2021 - SQL Injection</h1>
+            <p class="lead">@(Model.IsSecureMode ? "Versão segura com consultas parametrizadas" : "Exploração de consultas SQL sem parametrização adequada")</p>
         </div>
         <div class="col-md-4 text-end">
             <div class="btn-group" role="group">
-                <input type="radio" class="btn-check" name="mode" id="vulnerable" autocomplete="off" checked disabled>
-                <label class="btn btn-outline-danger" for="vulnerable">🔓 Vulnerável</label>
-
-                <input type="radio" class="btn-check" name="mode" id="secure" autocomplete="off" disabled>
-                <label class="btn btn-outline-success" for="secure">🔒 Seguro</label>
+                <a href="?IsSecureMode=false" class="btn @(Model.IsSecureMode ? "btn-outline-danger" : "btn-danger")">
+                    🔓 Vulnerável
+                </a>
+                <a href="?IsSecureMode=true" class="btn @(Model.IsSecureMode ? "btn-success" : "btn-outline-success")">
+                    🔒 Seguro
+                </a>
             </div>
-            <small class="d-block mt-1 text-muted">Versão segura: em breve</small>
+            <small class="d-block mt-1 text-muted">@(Model.IsSecureMode ? "Modo seguro ativo" : "Modo vulnerável ativo")</small>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-12">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">🔍 Buscar Produtos</h5>
+            <div class="card border-@(Model.IsSecureMode ? "success" : "danger")">
+                <div class="card-header bg-@(Model.IsSecureMode ? "success" : "danger") text-white">
+                    <h5 class="mb-0">🔍 Buscar Produtos (@(Model.IsSecureMode ? "Modo Seguro" : "Modo Vulnerável"))</h5>
                 </div>
                 <div class="card-body">
                     <form method="get">
+                        <input type="hidden" asp-for="IsSecureMode" />
                         <div class="input-group mb-3">
                             <input type="text"
                                    asp-for="SearchString"
                                    class="form-control form-control-lg"
                                    placeholder="Digite o nome do produto (ex: Hammer)" />
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="btn btn-@(Model.IsSecureMode ? "success" : "danger") btn-lg">
                                 <i class="bi bi-search"></i> Buscar
                             </button>
                         </div>
                     </form>
 
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger mt-3">
+                            <h6>❌ Erro:</h6>
+                            <code class="text-dark">@Model.ErrorMessage</code>
+                        </div>
+                    }
+
                     @if (!string.IsNullOrEmpty(Model.ExecutedQuery))
                     {
-                        <div class="alert alert-warning mt-3">
+                        <div class="alert alert-@(Model.IsSecureMode ? "info" : "warning") mt-3">
                             <h6>📋 Query SQL Executada:</h6>
-                            <code class="text-dark">@Model.ExecutedQuery</code>
+                            <pre class="mb-0"><code class="text-dark">@Model.ExecutedQuery</code></pre>
                         </div>
                     }
                 </div>
@@ -110,21 +120,89 @@
         </div>
     }
 
+    @if (!Model.IsSecureMode)
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0">🎓 Exemplos de Payloads para Teste</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Teste os seguintes payloads para entender a vulnerabilidade:</p>
+                        <ol>
+                            <li><code>' OR '1'='1</code> - Retorna todos os produtos</li>
+                            <li><code>' OR 1=1 --</code> - Bypass do filtro</li>
+                            <li><code>' UNION SELECT "Id","Name","Password" FROM "Users" --</code> - Exfiltração de dados</li>
+                            <li><code>'; DROP TABLE "Product"; --</code> - Tentativa de destruição (não funcionará devido a permissões)</li>
+                        </ol>
+                        <p class="mb-0"><strong>💡 Dica:</strong> Observe a query SQL executada após cada tentativa!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">✅ Proteção Ativa</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Modo Seguro:</strong> Esta versão usa consultas parametrizadas, que tratam a entrada do usuário como DADOS, não como CÓDIGO SQL.</p>
+                        <p>Tente os mesmos payloads maliciosos que funcionavam no modo vulnerável:</p>
+                        <ul>
+                            <li><code>' OR '1'='1</code> - Será tratado como texto literal</li>
+                            <li><code>' OR 1=1 --</code> - Não terá efeito especial</li>
+                            <li><code>' UNION SELECT...</code> - Será buscado como nome de produto</li>
+                        </ul>
+                        <p class="mb-0"><strong>🛡️ Resultado:</strong> Nenhum payload malicioso funcionará! A aplicação está protegida.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
     <div class="row mt-4">
         <div class="col-md-12">
-            <div class="card border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">🎓 Exemplos de Payloads para Teste</h5>
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">💻 Comparação de Código</h5>
                 </div>
                 <div class="card-body">
-                    <p>Teste os seguintes payloads para entender a vulnerabilidade:</p>
-                    <ol>
-                        <li><code>' OR '1'='1</code> - Retorna todos os produtos</li>
-                        <li><code>' OR 1=1 --</code> - Bypass do filtro</li>
-                        <li><code>' UNION SELECT "Id","Name","Password" FROM "Users" --</code> - Exfiltração de dados</li>
-                        <li><code>'; DROP TABLE "Product"; --</code> - Tentativa de destruição (não funcionará devido a permissões)</li>
-                    </ol>
-                    <p class="mb-0"><strong>💡 Dica:</strong> Observe a query SQL executada após cada tentativa!</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-danger">❌ Código Vulnerável</h6>
+                            <pre class="bg-light p-3 rounded"><code class="text-dark">@("// String interpolation - VULNERÁVEL")
+@("cmd.CommandText = $@\"SELECT * FROM ...\"")
+@("    WHERE Name LIKE '%{searchString}%'\";")
+
+@("// Entrada do usuário é inserida diretamente")
+@("// permitindo injeção de código SQL!")</code></pre>
+                            <p class="text-muted small mb-0">O input do usuário se torna parte da query SQL.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-success">✅ Código Seguro</h6>
+                            <pre class="bg-light p-3 rounded"><code class="text-dark">@("// Parametrized query - SEGURO")
+@("cmd.CommandText = @\"SELECT * FROM ...\"")
+@("    WHERE Name LIKE @searchString\";")
+@("cmd.Parameters.AddWithValue(")
+@("    \"@searchString\", $\"%{searchString}%\");")
+
+@("// Input tratado como DADO, não CÓDIGO!")</code></pre>
+                            <p class="text-success small mb-0">Parâmetros são escapados automaticamente pelo driver.</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="alert alert-light mb-0">
+                        <strong>📚 Diferença Principal:</strong>
+                        <ul class="mb-0">
+                            <li><strong>Vulnerável:</strong> Concatenação de strings - permite injeção de código</li>
+                            <li><strong>Seguro:</strong> Parâmetros - entrada é tratada como dados puros</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

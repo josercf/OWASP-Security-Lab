@@ -30,7 +30,6 @@ public class SecureDatabaseService : IDatabaseService
             Username = _config.Username,
             Password = _config.Password,
             SslMode = SslMode.Disable,
-            TrustServerCertificate = true,
             Pooling = true
         };
 

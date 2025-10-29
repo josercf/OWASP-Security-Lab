@@ -15,7 +15,11 @@ var dbConfig = new DatabaseConfig
 
 builder.Services.AddSingleton(dbConfig);
 
-// Registra o serviço vulnerável (para demonstração)
+// Registra ambos os serviços de database (para comparação educacional)
+builder.Services.AddSingleton<VulnerableDatabaseService>();
+builder.Services.AddSingleton<SecureDatabaseService>();
+
+// Registra o serviço vulnerável como padrão para IDatabaseService (compatibilidade)
 builder.Services.AddSingleton<IDatabaseService, VulnerableDatabaseService>();
 
 // Add services to the container.
