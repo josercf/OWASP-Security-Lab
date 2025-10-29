@@ -1,0 +1,141 @@
+@page
+@model VulnerableWebApp.Pages.A03_Injection.SqlInjectionModel
+@{
+    ViewData["Title"] = "A03:2021 - SQL Injection Lab";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">⚠️ LABORATÓRIO DE SEGURANÇA</h4>
+                <p>Esta página contém <strong>INTENCIONALMENTE</strong> uma vulnerabilidade de SQL Injection para fins educacionais.</p>
+                <hr>
+                <p class="mb-0">🎯 <strong>Objetivo:</strong> Entender como ataques de SQL Injection funcionam e como preveni-los.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>🔓 A03:2021 - SQL Injection</h1>
+            <p class="lead">Exploração de consultas SQL sem parametrização adequada.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="mode" id="vulnerable" autocomplete="off" checked disabled>
+                <label class="btn btn-outline-danger" for="vulnerable">🔓 Vulnerável</label>
+
+                <input type="radio" class="btn-check" name="mode" id="secure" autocomplete="off" disabled>
+                <label class="btn btn-outline-success" for="secure">🔒 Seguro</label>
+            </div>
+            <small class="d-block mt-1 text-muted">Versão segura: em breve</small>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">🔍 Buscar Produtos</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get">
+                        <div class="input-group mb-3">
+                            <input type="text"
+                                   asp-for="SearchString"
+                                   class="form-control form-control-lg"
+                                   placeholder="Digite o nome do produto (ex: Hammer)" />
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                        </div>
+                    </form>
+
+                    @if (!string.IsNullOrEmpty(Model.ExecutedQuery))
+                    {
+                        <div class="alert alert-warning mt-3">
+                            <h6>📋 Query SQL Executada:</h6>
+                            <code class="text-dark">@Model.ExecutedQuery</code>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Products != null && Model.Products.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">✅ Resultados Encontrados (@Model.Products.Count)</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nome</th>
+                                        <th>Preço</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var product in Model.Products)
+                                    {
+                                        <tr>
+                                            <td>@product.Id</td>
+                                            <td>@product.Name</td>
+                                            <td><span class="badge bg-primary">R$ @product.Price</span></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(Model.SearchString))
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="alert alert-info">
+                    <p class="mb-0">ℹ️ Nenhum produto encontrado para: <strong>@Model.SearchString</strong></p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">🎓 Exemplos de Payloads para Teste</h5>
+                </div>
+                <div class="card-body">
+                    <p>Teste os seguintes payloads para entender a vulnerabilidade:</p>
+                    <ol>
+                        <li><code>' OR '1'='1</code> - Retorna todos os produtos</li>
+                        <li><code>' OR 1=1 --</code> - Bypass do filtro</li>
+                        <li><code>' UNION SELECT "Id","Name","Password" FROM "Users" --</code> - Exfiltração de dados</li>
+                        <li><code>'; DROP TABLE "Product"; --</code> - Tentativa de destruição (não funcionará devido a permissões)</li>
+                    </ol>
+                    <p class="mb-0"><strong>💡 Dica:</strong> Observe a query SQL executada após cada tentativa!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3 mb-4">
+        <div class="col-md-12">
+            <a asp-page="/Index" class="btn btn-secondary">← Voltar ao Dashboard</a>
+            <a href="https://owasp.org/Top10/A03_2021-Injection/" target="_blank" class="btn btn-info">
+                📚 Ler mais sobre A03:2021
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # ========================================
+  # PostgreSQL Database
+  # ========================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: owasp-lab-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - owasp-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ========================================
+  # Vulnerable Web Application
+  # ========================================
+  webapp:
+    build:
+      context: ./src/VulnerableWebApp
+      dockerfile: Dockerfile
+    container_name: owasp-lab-webapp
+    restart: unless-stopped
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - Database__Host=postgres
+      - Database__Port=5432
+      - Database__Name=vulnerabledb
+      - Database__Username=vulnapp
+      - Database__Password=password123
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - owasp-network
+
+  # ========================================
+  # PgAdmin (opcional - para gerenciar DB)
+  # ========================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: owasp-lab-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@owasplab.local
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - owasp-network
+    profiles:
+      - tools
+
+# ========================================
+# Volumes
+# ========================================
+volumes:
+  postgres-data:
+    driver: local
+
+# ========================================
+# Networks
+# ========================================
+networks:
+  owasp-network:
+    driver: bridge

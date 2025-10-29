@@ -1,0 +1,223 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "OWASP Security Lab";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12 text-center mb-4">
+            <h1 class="display-3">🔐 OWASP Security Lab</h1>
+            <p class="lead text-muted">Laboratório Educacional de Vulnerabilidades Web</p>
+            <div class="alert alert-warning d-inline-block">
+                <strong>⚠️ AVISO:</strong> Este ambiente contém vulnerabilidades intencionais para fins educacionais.
+                <br><strong>NUNCA</strong> use este código em produção!
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-3">📚 OWASP Top 10 - 2021</h2>
+            <p>Explore os principais riscos de segurança em aplicações web segundo a OWASP:</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- A01: Broken Access Control -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">A01:2021</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Broken Access Control</h6>
+                    <p class="card-text text-muted">Falhas no controle de acesso permitem que usuários acessem recursos não autorizados.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                        🚧 Em breve
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- A02: Cryptographic Failures -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">A02:2021</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Cryptographic Failures</h6>
+                    <p class="card-text text-muted">Falhas relacionadas à criptografia que expõem dados sensíveis.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                        🚧 Em breve
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- A03: Injection - DISPONÍVEL -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-danger shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">A03:2021</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Injection (SQL Injection)</h6>
+                    <p class="card-text">Aprenda como ataques de injeção SQL funcionam e como preveni-los.</p>
+                    <span class="badge bg-success">✓ Disponível</span>
+                </div>
+                <div class="card-footer">
+                    <a asp-page="/A03-Injection/SqlInjection" class="btn btn-danger btn-sm w-100">
+                        🔓 Acessar Lab
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- A04: Insecure Design -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">A04:2021</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Insecure Design</h6>
+                    <p class="card-text text-muted">Falhas de design e arquitetura que criam vulnerabilidades.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                        🚧 Em breve
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- A05: Security Misconfiguration -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">A05:2021</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Security Misconfiguration</h6>
+                    <p class="card-text text-muted">Configurações incorretas que expõem a aplicação a riscos.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                        🚧 Em breve
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- A06: Vulnerable and Outdated Components -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">A06:2021</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Vulnerable Components</h6>
+                    <p class="card-text text-muted">Uso de componentes com vulnerabilidades conhecidas.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                        🚧 Em breve
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- A07: Identification and Authentication Failures -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">A07:2021</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Authentication Failures</h6>
+                    <p class="card-text text-muted">Falhas na autenticação e gerenciamento de sessões.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                        🚧 Em breve
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- A08: Software and Data Integrity Failures -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">A08:2021</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Integrity Failures</h6>
+                    <p class="card-text text-muted">Falhas relacionadas à integridade de software e dados.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                        🚧 Em breve
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- A09: Security Logging and Monitoring Failures -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">A09:2021</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Logging Failures</h6>
+                    <p class="card-text text-muted">Falta de logging e monitoramento adequados.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                        🚧 Em breve
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- A10: Server-Side Request Forgery -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">A10:2021</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">SSRF</h6>
+                    <p class="card-text text-muted">Vulnerabilidades de falsificação de requisições server-side.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                        🚧 Em breve
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5 mb-4">
+        <div class="col-md-12">
+            <div class="card border-info">
+                <div class="card-body">
+                    <h5>📖 Recursos Adicionais</h5>
+                    <ul class="mb-0">
+                        <li><a href="https://owasp.org/Top10/" target="_blank">OWASP Top 10 - 2021</a></li>
+                        <li><a href="https://cheatsheetseries.owasp.org/" target="_blank">OWASP Cheat Sheet Series</a></li>
+                        <li><a href="https://github.com/josercf/OWASP-Security-Lab" target="_blank">Repositório GitHub do Projeto</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
