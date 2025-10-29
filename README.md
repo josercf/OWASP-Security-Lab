@@ -60,12 +60,32 @@ O OWASP Security Lab é uma aplicação web desenvolvida em ASP.NET Core (.NET 1
 # Ver logs da aplicação
 docker-compose logs -f webapp
 
-# Ver logs do banco de dados
+# Ver logs do banco de dados (inclui logs de inicialização)
 docker-compose logs -f postgres
 
 # Reiniciar apenas a aplicação
 docker-compose restart webapp
 ```
+
+### Reset Completo do Banco de Dados
+
+Para recriar o banco com dados limpos:
+
+```bash
+# Para e remove TODOS os dados (volumes)
+docker-compose down -v
+
+# Inicia novamente (recria tudo do zero)
+docker-compose up -d
+```
+
+⚠️ O banco de dados é inicializado automaticamente com:
+- ✅ Tabelas criadas (`Product`, `Users`)
+- ✅ Dados de exemplo inseridos (8 produtos, 4 usuários)
+- ✅ Permissões configuradas
+- ✅ Validação automática executada
+
+Os scripts de inicialização estão em `database/init/` e são executados automaticamente na primeira vez que o container PostgreSQL é criado. Para mais detalhes, veja [database/README.md](database/README.md).
 
 ## 📖 Labs Disponíveis
 

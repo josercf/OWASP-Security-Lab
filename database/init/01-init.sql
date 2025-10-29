@@ -3,17 +3,17 @@
 -- ========================================
 -- Este script inicializa o banco de dados para o laboratório
 -- de segurança com dados de exemplo.
+--
+-- IMPORTANTE: Este script é executado automaticamente pelo PostgreSQL
+-- quando o container é iniciado pela primeira vez. O banco 'vulnerabledb'
+-- já é criado automaticamente via POSTGRES_DB no docker-compose.yml
 
--- Criar usuário e banco de dados
-CREATE DATABASE vulnerabledb;
+-- Criar usuário da aplicação
 CREATE USER vulnapp WITH ENCRYPTED PASSWORD 'password123';
-GRANT ALL PRIVILEGES ON DATABASE vulnerabledb TO vulnapp;
-
--- Conectar ao banco
-\c vulnerabledb
 
 -- Garantir permissões no schema public
 GRANT ALL ON SCHEMA public TO vulnapp;
+GRANT ALL ON DATABASE vulnerabledb TO vulnapp;
 
 -- ========================================
 -- Tabela: Product

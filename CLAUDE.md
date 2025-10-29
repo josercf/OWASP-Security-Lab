@@ -65,13 +65,28 @@ dotnet watch run
 # Start only database
 docker-compose up -d postgres
 
+# View database initialization logs
+docker-compose logs -f postgres
+
 # Connect to PostgreSQL
 docker exec -it owasp-lab-db psql -U postgres -d vulnerabledb
+
+# Connect as application user
+docker exec -it owasp-lab-db psql -U vulnapp -d vulnerabledb
 
 # Reset database (remove and recreate)
 docker-compose down -v
 docker-compose up -d postgres
 ```
+
+**Database Initialization**: The PostgreSQL container automatically executes all SQL scripts in `database/init/` when started for the first time:
+- `01-init.sql` - Creates tables, user, and loads data
+- `99-validation.sql` - Validates the setup and logs results
+
+The webapp service waits for the healthcheck to pass, which verifies:
+1. PostgreSQL is ready
+2. Database `vulnerabledb` is accessible
+3. Table `Product` exists and has data
 
 ### Build and Test
 
