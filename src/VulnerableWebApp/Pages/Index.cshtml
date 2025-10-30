@@ -24,20 +24,23 @@
     </div>
 
     <div class="row g-4">
-        <!-- A01: Broken Access Control -->
+        <!-- A01: Broken Access Control - DISPONÍVEL -->
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-secondary">
-                <div class="card-header bg-secondary text-white">
+            <div class="card h-100 border-danger shadow">
+                <div class="card-header bg-danger text-white">
                     <h5 class="mb-0">A01:2021</h5>
                 </div>
                 <div class="card-body">
                     <h6 class="card-title">Broken Access Control</h6>
-                    <p class="card-text text-muted">Falhas no controle de acesso permitem que usuários acessem recursos não autorizados.</p>
+                    <p class="card-text">Explore como falhas no controle de acesso permitem elevação de privilégios e acesso não autorizado.</p>
+                    <span class="badge bg-success">✓ Disponível</span>
+                    <span class="badge bg-info">🔓 Vulnerável + 🔒 Seguro</span>
+                    <span class="badge bg-warning">👥 Elevação de Privilégios</span>
                 </div>
                 <div class="card-footer">
-                    <button class="btn btn-outline-secondary btn-sm w-100" disabled>
-                        🚧 Em breve
-                    </button>
+                    <a asp-page="/A01-BrokenAccessControl/BrokenAccessControl" class="btn btn-danger btn-sm w-100">
+                        🚀 Acessar Lab
+                    </a>
                 </div>
             </div>
         </div>
@@ -60,7 +63,7 @@
             </div>
         </div>
 
-        <!-- A03: Injection - DISPONÍVEL -->
+        <!-- A03: Injection - SQL Injection - DISPONÍVEL -->
         <div class="col-md-6 col-lg-4">
             <div class="card h-100 border-danger shadow">
                 <div class="card-header bg-danger text-white">
@@ -74,6 +77,27 @@
                 </div>
                 <div class="card-footer">
                     <a asp-page="/A03-Injection/SqlInjection" class="btn btn-danger btn-sm w-100">
+                        🚀 Acessar Lab
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- A03: Injection - Prompt Injection - DISPONÍVEL -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-danger shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">A03:2021</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Injection (Prompt Injection)</h6>
+                    <p class="card-text">Explore vulnerabilidades de Prompt Injection em sistemas de IA e aprenda técnicas de proteção.</p>
+                    <span class="badge bg-success">✓ Disponível</span>
+                    <span class="badge bg-info">🔓 Vulnerável + 🔒 Seguro</span>
+                    <span class="badge bg-warning">🤖 Requer API OpenAI</span>
+                </div>
+                <div class="card-footer">
+                    <a asp-page="/A03-Injection/PromptInjection" class="btn btn-danger btn-sm w-100">
                         🚀 Acessar Lab
                     </a>
                 </div>
@@ -170,20 +194,23 @@
             </div>
         </div>
 
-        <!-- A09: Security Logging and Monitoring Failures -->
+        <!-- A09: Security Logging and Monitoring Failures - DISPONÍVEL -->
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-secondary">
-                <div class="card-header bg-secondary text-white">
+            <div class="card h-100 border-danger shadow">
+                <div class="card-header bg-danger text-white">
                     <h5 class="mb-0">A09:2021</h5>
                 </div>
                 <div class="card-body">
-                    <h6 class="card-title">Logging Failures</h6>
-                    <p class="card-text text-muted">Falta de logging e monitoramento adequados.</p>
+                    <h6 class="card-title">Logging and Monitoring Failures</h6>
+                    <p class="card-text">Explore como a falta de logging adequado impede detecção de ataques e investigação de incidentes.</p>
+                    <span class="badge bg-success">✓ Disponível</span>
+                    <span class="badge bg-info">🔓 Vulnerável + 🔒 Seguro</span>
+                    <span class="badge bg-warning">📊 Auditoria</span>
                 </div>
                 <div class="card-footer">
-                    <button class="btn btn-outline-secondary btn-sm w-100" disabled>
-                        🚧 Em breve
-                    </button>
+                    <a asp-page="/A09-LoggingFailures/LoggingFailures" class="btn btn-danger btn-sm w-100">
+                        🚀 Acessar Lab
+                    </a>
                 </div>
             </div>
         </div>

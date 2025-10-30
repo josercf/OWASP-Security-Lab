@@ -1,0 +1,475 @@
+@page
+@model VulnerableWebApp.Pages.A09_LoggingFailures.LoggingFailuresModel
+@{
+    ViewData["Title"] = "A09:2021 - Security Logging Failures Lab";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">⚠️ LABORATÓRIO DE SEGURANÇA</h4>
+                <p>Esta página demonstra <strong>FALHAS DE LOGGING</strong> que impedem detecção de ataques e investigação de incidentes.</p>
+                <hr>
+                <p class="mb-0">🎯 <strong>Objetivo:</strong> Entender a importância de logging adequado para segurança, compliance e resposta a incidentes.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>@(Model.IsSecureMode ? "🔒" : "🔓") A09:2021 - Logging and Monitoring Failures</h1>
+            <p class="lead">@(Model.IsSecureMode ? "Logging estruturado com auditoria completa" : "Logging inadequado sem visibilidade de segurança")</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <a href="?IsSecureMode=false" class="btn @(Model.IsSecureMode ? "btn-outline-danger" : "btn-danger")">
+                    🔓 Vulnerável
+                </a>
+                <a href="?IsSecureMode=true" class="btn @(Model.IsSecureMode ? "btn-success" : "btn-outline-success")">
+                    🔒 Seguro
+                </a>
+            </div>
+            <small class="d-block mt-1 text-muted">@(Model.IsSecureMode ? "Modo seguro ativo" : "Modo vulnerável ativo")</small>
+        </div>
+    </div>
+
+    @if (Model.Result != null)
+    {
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card border-@(Model.IsSecureMode ? "success" : "danger")">
+                    <div class="card-header bg-@(Model.IsSecureMode ? "success" : "danger") text-white">
+                        <h5 class="mb-0">📋 Resultado da Operação</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @if (!Model.IsSecureMode)
+                            {
+                                <div class="col-md-12">
+                                    <h6 class="text-danger">🔓 Log Vulnerável:</h6>
+                                    <div class="alert alert-warning">
+                                        <pre class="mb-0" style="white-space: pre-wrap;">@Model.Result.VulnerableLog</pre>
+                                    </div>
+
+                                    @if (Model.Result.MissingInformation.Any())
+                                    {
+                                        <h6 class="text-danger mt-3">❌ Informações Ausentes:</h6>
+                                        <ul class="text-danger">
+                                            @foreach (var item in Model.Result.MissingInformation)
+                                            {
+                                                @if (!string.IsNullOrWhiteSpace(item))
+                                                {
+                                                    <li>@item</li>
+                                                }
+                                            }
+                                        </ul>
+                                    }
+
+                                    @if (Model.Result.SecurityConcerns.Any())
+                                    {
+                                        <h6 class="text-danger mt-3">🚨 Preocupações de Segurança:</h6>
+                                        <ul class="text-danger">
+                                            @foreach (var concern in Model.Result.SecurityConcerns)
+                                            {
+                                                <li>@concern</li>
+                                            }
+                                        </ul>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-12">
+                                    <h6 class="text-success">✅ Log Seguro:</h6>
+                                    <div class="alert alert-success">
+                                        <pre class="mb-0" style="white-space: pre-wrap;">@Model.Result.SecureLog</pre>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card border-@(Model.IsSecureMode ? "success" : "danger")">
+                <div class="card-header bg-@(Model.IsSecureMode ? "success" : "danger") text-white">
+                    <h5 class="mb-0">🧪 Simular Eventos de Segurança</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">👤 Username:</label>
+                            <input type="text" class="form-control" id="username" value="john.doe" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">🔐 Password:</label>
+                            <input type="password" class="form-control" id="password" value="password123" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <h6>🔐 1. Login Attempts</h6>
+                            <p class="text-muted small">Simule tentativas de login (sucesso e falha)</p>
+                            <form method="post" asp-page-handler="LoginAttempt" class="d-inline">
+                                <input type="hidden" asp-for="IsSecureMode" />
+                                <input type="hidden" asp-for="Username" id="login-username" />
+                                <input type="hidden" asp-for="Password" id="login-password" />
+                                <input type="hidden" name="success" value="true" />
+                                <button type="submit" class="btn btn-success btn-sm" onclick="setLoginData(this.form)">
+                                    ✅ Login Sucesso
+                                </button>
+                            </form>
+                            <form method="post" asp-page-handler="LoginAttempt" class="d-inline">
+                                <input type="hidden" asp-for="IsSecureMode" />
+                                <input type="hidden" asp-for="Username" id="login-fail-username" />
+                                <input type="hidden" asp-for="Password" id="login-fail-password" />
+                                <input type="hidden" name="success" value="false" />
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="setLoginData(this.form)">
+                                    ❌ Login Falha
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <h6>📊 2. Data Access</h6>
+                            <p class="text-muted small">Simule acesso a dados sensíveis</p>
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control" id="resource" placeholder="Ex: credit_card_data" />
+                            </div>
+                            <form method="post" asp-page-handler="DataAccess">
+                                <input type="hidden" asp-for="IsSecureMode" />
+                                <input type="hidden" asp-for="Username" id="data-username" />
+                                <input type="hidden" asp-for="Resource" id="data-resource" />
+                                <button type="submit" class="btn btn-info btn-sm" onclick="setDataAccessData(this.form)">
+                                    👁️ Acessar Dados Sensíveis
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <h6>🚫 3. Unauthorized Access Attempt</h6>
+                            <p class="text-muted small">Simule tentativa de acesso não autorizado</p>
+                            <form method="post" asp-page-handler="UnauthorizedAccess">
+                                <input type="hidden" asp-for="IsSecureMode" />
+                                <input type="hidden" asp-for="Username" id="unauth-username" />
+                                <button type="submit" class="btn btn-warning btn-sm" onclick="setUnauthData(this.form)">
+                                    ⚠️ Tentar Acesso Não Autorizado
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <h6>✏️ 4. Data Modification</h6>
+                            <p class="text-muted small">Simule modificação de dados críticos</p>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-sm mb-2" id="old-value" placeholder="Valor Anterior" value="role=user" />
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-sm mb-2" id="new-value" placeholder="Novo Valor" value="role=admin" />
+                                </div>
+                            </div>
+                            <form method="post" asp-page-handler="DataModification">
+                                <input type="hidden" asp-for="IsSecureMode" />
+                                <input type="hidden" asp-for="Username" id="mod-username" />
+                                <input type="hidden" asp-for="OldValue" id="mod-old" />
+                                <input type="hidden" asp-for="NewValue" id="mod-new" />
+                                <button type="submit" class="btn btn-primary btn-sm" onclick="setModificationData(this.form)">
+                                    📝 Modificar Dados
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <h6>🔍 5. Suspicious Activity</h6>
+                            <p class="text-muted small">Simule atividade suspeita</p>
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control" id="activity" placeholder="Ex: Multiple failed login attempts" value="10 tentativas de login em 5 segundos" />
+                            </div>
+                            <form method="post" asp-page-handler="SuspiciousActivity">
+                                <input type="hidden" asp-for="IsSecureMode" />
+                                <input type="hidden" asp-for="Username" id="sus-username" />
+                                <input type="hidden" asp-for="Activity" id="sus-activity" />
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="setSuspiciousData(this.form)">
+                                    🚨 Simular Atividade Suspeita
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.RecentLogs.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card border-info">
+                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">📜 Logs de Auditoria (@Model.RecentLogs.Count)</h5>
+                        <form method="post" asp-page-handler="ClearLogs" class="d-inline">
+                            <input type="hidden" asp-for="IsSecureMode" />
+                            <button type="submit" class="btn btn-sm btn-light" onclick="return confirm('Limpar todos os logs?')">
+                                🗑️ Limpar Logs
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Level</th>
+                                        <th>Event</th>
+                                        <th>User</th>
+                                        <th>IP</th>
+                                        <th>Resource</th>
+                                        <th>Status</th>
+                                        <th>Message</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var log in Model.RecentLogs)
+                                    {
+                                        var levelClass = log.Level switch
+                                        {
+                                            "Critical" => "table-danger",
+                                            "Warning" => "table-warning",
+                                            "Info" => "table-info",
+                                            _ => ""
+                                        };
+                                        <tr class="@levelClass">
+                                            <td><small>@log.Timestamp.ToString("HH:mm:ss")</small></td>
+                                            <td>
+                                                <span class="badge bg-@(log.Level switch { "Critical" => "danger", "Warning" => "warning", "Info" => "info", _ => "secondary" })">
+                                                    @log.Level
+                                                </span>
+                                            </td>
+                                            <td><small>@log.EventType</small></td>
+                                            <td><small>@log.Username</small></td>
+                                            <td><small>@log.IpAddress</small></td>
+                                            <td><small>@log.Resource</small></td>
+                                            <td>
+                                                @if (log.Success)
+                                                {
+                                                    <span class="badge bg-success">✓</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">✗</span>
+                                                }
+                                            </td>
+                                            <td><small>@log.Message</small></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="alert alert-info">
+                    ℹ️ Nenhum log de auditoria registrado. Execute algumas operações acima para gerar logs.
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (!Model.IsSecureMode)
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0">🎓 Problemas do Modo Vulnerável</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>❌ Falhas Críticas de Logging:</h6>
+                        <ul>
+                            <li><strong>Logs Vagos:</strong> "User logged in" - Quem? Quando? De onde?</li>
+                            <li><strong>Eventos Críticos Ignorados:</strong> Falhas de login não são registradas</li>
+                            <li><strong>Sem Contexto:</strong> Falta IP, timestamp preciso, detalhes</li>
+                            <li><strong>Sem Persistência:</strong> Logs apenas no console, não no banco</li>
+                            <li><strong>Sem Alertas:</strong> Ataques em andamento não geram notificações</li>
+                            <li><strong>Sem Auditoria:</strong> Impossível investigar incidentes</li>
+                        </ul>
+
+                        <div class="alert alert-danger mt-3">
+                            <strong>💰 Impacto Real:</strong>
+                            <ul class="mb-0">
+                                <li>Tempo médio de detecção de breach: <strong>287 dias</strong> (IBM Security, 2023)</li>
+                                <li>Custo médio de data breach: <strong>$4.45 milhões</strong></li>
+                                <li>Compliance: Violação de GDPR, LGPD, PCI-DSS</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">✅ Boas Práticas do Modo Seguro</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>✅ Logging Adequado Inclui:</h6>
+                        <ul>
+                            <li><strong>Quem:</strong> Usuário identificado</li>
+                            <li><strong>O quê:</strong> Ação executada com detalhes</li>
+                            <li><strong>Quando:</strong> Timestamp preciso (UTC)</li>
+                            <li><strong>Onde:</strong> IP, localização, contexto</li>
+                            <li><strong>Resultado:</strong> Sucesso ou falha</li>
+                            <li><strong>Contexto:</strong> Dados antes/depois, severity</li>
+                        </ul>
+
+                        <h6 class="mt-3">🛡️ Benefícios:</h6>
+                        <ul>
+                            <li>✅ Detecção rápida de ataques</li>
+                            <li>✅ Investigação forense completa</li>
+                            <li>✅ Compliance (GDPR, LGPD, PCI-DSS, SOX)</li>
+                            <li>✅ Resposta automatizada a incidentes</li>
+                            <li>✅ Métricas e análise de segurança</li>
+                        </ul>
+
+                        <div class="alert alert-success mt-3">
+                            <strong>📊 OWASP Logging Cheat Sheet:</strong>
+                            <ul class="mb-0">
+                                <li>Log ALL security events (login, access, changes)</li>
+                                <li>Use structured logging (JSON)</li>
+                                <li>Include correlation IDs</li>
+                                <li>Protect logs (integrity, retention)</li>
+                                <li>Monitor and alert on suspicious patterns</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">💻 Comparação de Código</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-danger">❌ Código Vulnerável</h6>
+                            <pre class="bg-light p-3 rounded"><code class="text-dark">// ❌ Log vago e inútil
+if (loginSuccess) {
+    logger.LogInfo("User logged in");
+}
+// ❌ Falhas NÃO são registradas!
+
+// ❌ Sem contexto, sem detalhes
+// ❌ Apenas console, não persiste</code></pre>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-success">✅ Código Seguro</h6>
+                            <pre class="bg-light p-3 rounded"><code class="text-dark">// ✅ Log estruturado e completo
+var log = new AuditLog {
+    User = username,
+    IP = ipAddress,
+    Action = "Login",
+    Success = success,
+    Timestamp = DateTime.UtcNow,
+    Details = JSON.serialize(context)
+};
+
+// ✅ Persiste no banco
+database.Save(log);
+
+// ✅ Alerta se suspeito
+if (isSuspicious) alert(secTeam);</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3 mb-4">
+        <div class="col-md-12">
+            <a asp-page="/Index" class="btn btn-secondary">← Voltar ao Dashboard</a>
+            <a href="https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/" target="_blank" class="btn btn-info">
+                📚 Ler mais sobre A09:2021
+            </a>
+            <a href="https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html" target="_blank" class="btn btn-info">
+                📖 OWASP Logging Cheat Sheet
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setLoginData(form) {
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+        form.querySelector('[id*="username"]').value = username;
+        form.querySelector('[id*="password"]').value = password;
+    }
+
+    function setDataAccessData(form) {
+        var username = document.getElementById('username').value;
+        var resource = document.getElementById('resource').value || 'sensitive_data.csv';
+        form.querySelector('#data-username').value = username;
+        form.querySelector('#data-resource').value = resource;
+    }
+
+    function setUnauthData(form) {
+        var username = document.getElementById('username').value;
+        form.querySelector('#unauth-username').value = username;
+    }
+
+    function setModificationData(form) {
+        var username = document.getElementById('username').value;
+        var oldVal = document.getElementById('old-value').value;
+        var newVal = document.getElementById('new-value').value;
+        form.querySelector('#mod-username').value = username;
+        form.querySelector('#mod-old').value = oldVal;
+        form.querySelector('#mod-new').value = newVal;
+    }
+
+    function setSuspiciousData(form) {
+        var username = document.getElementById('username').value;
+        var activity = document.getElementById('activity').value;
+        form.querySelector('#sus-username').value = username;
+        form.querySelector('#sus-activity').value = activity;
+    }
+</script>

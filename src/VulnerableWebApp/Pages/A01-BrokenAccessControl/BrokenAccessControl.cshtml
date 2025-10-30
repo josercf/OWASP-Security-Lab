@@ -1,0 +1,351 @@
+@page
+@model VulnerableWebApp.Pages.A01_BrokenAccessControl.BrokenAccessControlModel
+@{
+    ViewData["Title"] = "A01:2021 - Broken Access Control Lab";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">⚠️ LABORATÓRIO DE SEGURANÇA</h4>
+                <p>Esta página contém <strong>INTENCIONALMENTE</strong> uma vulnerabilidade de Broken Access Control (Elevação de Privilégios) para fins educacionais.</p>
+                <hr>
+                <p class="mb-0">🎯 <strong>Objetivo:</strong> Entender como falhas no controle de acesso permitem que usuários comuns executem ações administrativas.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>@(Model.IsSecureMode ? "🔒" : "🔓") A01:2021 - Broken Access Control</h1>
+            <p class="lead">@(Model.IsSecureMode ? "Versão segura com validação de permissões" : "Elevação de privilégios sem validação adequada")</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <a href="?IsSecureMode=false" class="btn @(Model.IsSecureMode ? "btn-outline-danger" : "btn-danger")">
+                    🔓 Vulnerável
+                </a>
+                <a href="?IsSecureMode=true" class="btn @(Model.IsSecureMode ? "btn-success" : "btn-outline-success")">
+                    🔒 Seguro
+                </a>
+            </div>
+            <small class="d-block mt-1 text-muted">@(Model.IsSecureMode ? "Modo seguro ativo" : "Modo vulnerável ativo")</small>
+        </div>
+    </div>
+
+    @if (Model.CurrentSession == null || !Model.CurrentSession.IsAuthenticated)
+    {
+        <!-- LOGIN FORM -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-@(Model.IsSecureMode ? "success" : "danger")">
+                    <div class="card-header bg-@(Model.IsSecureMode ? "success" : "danger") text-white">
+                        <h5 class="mb-0">🔐 Login - Sistema de Gerenciamento</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <h6>👤 Credenciais de Teste:</h6>
+                            <ul class="mb-0">
+                                <li><strong>Admin:</strong> admin@("@")owasp-lab.local / admin123</li>
+                                <li><strong>Usuário Comum:</strong> john.doe@("@")owasp-lab.local / password123</li>
+                            </ul>
+                        </div>
+
+                        <form method="post" asp-page-handler="Login">
+                            <input type="hidden" asp-for="IsSecureMode" />
+
+                            <div class="mb-3">
+                                <label for="Email" class="form-label">Email:</label>
+                                <input type="email" asp-for="Email" class="form-control" placeholder="usuario@owasp-lab.local" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Password" class="form-label">Senha:</label>
+                                <input type="password" asp-for="Password" class="form-control" required />
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(Model.LoginError))
+                            {
+                                <div class="alert alert-danger">
+                                    @Model.LoginError
+                                </div>
+                            }
+
+                            <button type="submit" class="btn btn-@(Model.IsSecureMode ? "success" : "danger") btn-lg">
+                                <i class="bi bi-box-arrow-in-right"></i> Fazer Login
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- ADMIN PANEL -->
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="card border-info">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>👤 Usuário Logado:</h6>
+                                <p class="mb-0">
+                                    <strong>@Model.CurrentSession.Name</strong><br>
+                                    Email: @Model.CurrentSession.Email<br>
+                                    Role: <span class="badge bg-@(Model.CurrentSession.IsAdmin ? "danger" : "primary")">@Model.CurrentSession.Role</span>
+                                </p>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <form method="post" asp-page-handler="Logout">
+                                    <input type="hidden" asp-for="IsSecureMode" />
+                                    <button type="submit" class="btn btn-secondary">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.OperationResult != null)
+        {
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <div class="alert alert-@(Model.OperationResult.Success ? (Model.OperationResult.WasAuthorized && Model.IsSecureMode ? "success" : "warning") : "danger")">
+                        <h6>📋 Resultado da Operação:</h6>
+                        <pre class="mb-0" style="white-space: pre-wrap;">@Model.OperationResult.Message</pre>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-@(Model.IsSecureMode ? "success" : "danger")">
+                    <div class="card-header bg-@(Model.IsSecureMode ? "success" : "danger") text-white">
+                        <h5 class="mb-0">👥 Painel Administrativo - Gerenciar Usuários</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (!Model.IsSecureMode && !Model.CurrentSession.IsAdmin)
+                        {
+                            <div class="alert alert-warning">
+                                <strong>⚠️ ATENÇÃO:</strong> Você está logado como usuário comum, mas no modo vulnerável pode executar ações administrativas!
+                                Tente as operações abaixo e veja a falha de segurança.
+                            </div>
+                        }
+
+                        @if (Model.IsSecureMode && !Model.CurrentSession.IsAdmin)
+                        {
+                            <div class="alert alert-success">
+                                <strong>✅ PROTEGIDO:</strong> No modo seguro, apenas administradores podem executar essas ações.
+                                Tente executar as operações e veja que serão bloqueadas.
+                            </div>
+                        }
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in Model.AllUsers)
+                                    {
+                                        <tr class="@(user.Id == Model.CurrentSession.UserId ? "table-info" : "")">
+                                            <td>
+                                                @user.Name
+                                                @if (user.Id == Model.CurrentSession.UserId)
+                                                {
+                                                    <span class="badge bg-info">Você</span>
+                                                }
+                                            </td>
+                                            <td>@user.Email</td>
+                                            <td>
+                                                <span class="badge bg-@(user.Role == "Admin" ? "danger" : "primary")">
+                                                    @user.Role
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-@(user.IsActive ? "success" : "secondary")">
+                                                    @(user.IsActive ? "Ativo" : "Inativo")
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (user.Id != Model.CurrentSession.UserId)
+                                                {
+                                                    <form method="post" class="d-inline" asp-page-handler="ViewSensitiveData">
+                                                        <input type="hidden" asp-for="IsSecureMode" />
+                                                        <input type="hidden" name="TargetUserId" value="@user.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-info" title="Ver dados sensíveis">
+                                                            <i class="bi bi-eye"></i>
+                                                        </button>
+                                                    </form>
+
+                                                    <form method="post" class="d-inline" asp-page-handler="ToggleStatus">
+                                                        <input type="hidden" asp-for="IsSecureMode" />
+                                                        <input type="hidden" name="TargetUserId" value="@user.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-warning" title="Ativar/Desativar">
+                                                            <i class="bi bi-toggle-on"></i>
+                                                        </button>
+                                                    </form>
+
+                                                    <form method="post" class="d-inline" asp-page-handler="DeleteUser" onsubmit="return confirm('Tem certeza que deseja deletar este usuário?');">
+                                                        <input type="hidden" asp-for="IsSecureMode" />
+                                                        <input type="hidden" name="TargetUserId" value="@user.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-danger" title="Deletar usuário">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (!Model.IsSecureMode)
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0">🎓 Como Explorar a Vulnerabilidade</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>Passo a Passo:</h6>
+                        <ol>
+                            <li>Faça login como <strong>usuário comum</strong>: john.doe@("@")owasp-lab.local / password123</li>
+                            <li>Observe que você tem Role = <span class="badge bg-primary">User</span> (não Admin)</li>
+                            <li>Tente clicar nos botões de ação:
+                                <ul>
+                                    <li><i class="bi bi-eye"></i> Ver dados sensíveis de outros usuários</li>
+                                    <li><i class="bi bi-toggle-on"></i> Ativar/Desativar usuários</li>
+                                    <li><i class="bi bi-trash"></i> Deletar usuários</li>
+                                </ul>
+                            </li>
+                            <li>⚠️ <strong>VULNERABILIDADE:</strong> As ações são executadas mesmo sendo usuário comum!</li>
+                        </ol>
+
+                        <div class="alert alert-warning">
+                            <strong>💡 Por que isso acontece?</strong><br>
+                            O código não valida se o usuário tem permissão de Admin antes de executar operações administrativas.
+                            Apenas verifica se o usuário está autenticado, mas não verifica seu Role!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">✅ Proteção Ativa</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Modo Seguro:</strong> Esta versão valida adequadamente as permissões.</p>
+
+                        <h6>Teste a Proteção:</h6>
+                        <ol>
+                            <li>Faça login como <strong>usuário comum</strong>: john.doe@("@")owasp-lab.local / password123</li>
+                            <li>Tente executar qualquer ação administrativa</li>
+                            <li>✅ <strong>PROTEÇÃO:</strong> Você receberá mensagem de "ACESSO NEGADO"</li>
+                            <li>Faça logout e logue como <strong>admin</strong>: admin@("@")owasp-lab.local / admin123</li>
+                            <li>Agora as ações administrativas funcionarão corretamente</li>
+                        </ol>
+
+                        <div class="alert alert-success">
+                            <strong>🛡️ Como funciona a proteção?</strong><br>
+                            Antes de executar qualquer operação administrativa, o sistema verifica:
+                            <ul class="mb-0">
+                                <li>✅ Usuário está autenticado?</li>
+                                <li>✅ Usuário tem Role = "Admin"?</li>
+                                <li>✅ Apenas se ambas forem verdadeiras, a operação é executada</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">💻 Comparação de Código</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-danger">❌ Código Vulnerável</h6>
+                            <pre class="bg-light p-3 rounded"><code class="text-dark">public void DeleteUser(string userId)
+{
+    // ⚠️ SEM validação de permissão!
+    // Apenas executa a operação
+
+    database.DeleteUser(userId);
+
+    // Qualquer usuário autenticado
+    // pode deletar outros!
+}</code></pre>
+                            <p class="text-muted small mb-0">Não valida se o usuário tem permissão Admin.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-success">✅ Código Seguro</h6>
+                            <pre class="bg-light p-3 rounded"><code class="text-dark">public void DeleteUser(string userId, User current)
+{
+    // ✅ Valida permissão!
+    if (current.Role != "Admin")
+    {
+        throw new UnauthorizedException();
+    }
+
+    database.DeleteUser(userId);
+
+    // Apenas admins podem deletar
+}</code></pre>
+                            <p class="text-success small mb-0">Valida explicitamente a Role antes de executar.</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="alert alert-light mb-0">
+                        <strong>📚 Princípio de Segurança:</strong>
+                        <ul class="mb-0">
+                            <li><strong>Autenticação ≠ Autorização</strong></li>
+                            <li><strong>Autenticação:</strong> "Quem você é?" (login)</li>
+                            <li><strong>Autorização:</strong> "O que você pode fazer?" (permissões)</li>
+                            <li><strong>Regra de Ouro:</strong> SEMPRE valide permissões antes de executar operações sensíveis!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3 mb-4">
+        <div class="col-md-12">
+            <a asp-page="/Index" class="btn btn-secondary">← Voltar ao Dashboard</a>
+            <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/" target="_blank" class="btn btn-info">
+                📚 Ler mais sobre A01:2021
+            </a>
+        </div>
+    </div>
+</div>
