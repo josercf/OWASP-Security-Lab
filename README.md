@@ -43,6 +43,8 @@ O OWASP Security Lab é uma aplicação web desenvolvida em ASP.NET Core (.NET 1
    docker-compose up -d
    ```
 
+> 💡 **Porta 5432 ocupada?** Se você já tiver um PostgreSQL rodando na máquina, o `up` falha com `port is already allocated`. Publique o banco em outra porta com um `docker-compose.override.yml` local (`ports: ["55432:5432"]`); a aplicação fala com o banco pela rede interna e não muda nada.
+
 3. **Acesse a aplicação**
    - 🌐 **Web App**: http://localhost:8080
    - 🗄️ **PgAdmin** (opcional): http://localhost:5050
@@ -81,7 +83,7 @@ docker-compose up -d
 
 ⚠️ O banco de dados é inicializado automaticamente com:
 - ✅ Tabelas criadas (`Product`, `Users`)
-- ✅ Dados de exemplo inseridos (8 produtos, 4 usuários)
+- ✅ Dados de exemplo inseridos (8 produtos, 5 usuários)
 - ✅ Permissões configuradas
 - ✅ Validação automática executada
 
@@ -89,51 +91,38 @@ Os scripts de inicialização estão em `database/init/` e são executados autom
 
 ## 📖 Labs Disponíveis
 
-### ✅ A03:2021 - Injection (SQL Injection)
+O quadro abaixo é a **fonte da verdade** sobre o que já existe e o que ainda está planejado. Cada lab implementado tem **modo vulnerável e modo seguro** com toggle interativo na própria página.
 
-**Status**: 🟢 Disponível (Versões Vulnerável + Segura)
-**Página**: `/A03-Injection/SqlInjection`
+### ✅ Implementados
 
-Demonstra vulnerabilidades de SQL Injection através de consultas não parametrizadas, com **toggle interativo** para alternar entre código vulnerável e seguro.
+| Categoria OWASP | Lab | Página | Documentação |
+|-----------------|-----|--------|--------------|
+| A01:2021 - Broken Access Control | Elevação de privilégios e IDOR | `/A01-BrokenAccessControl/BrokenAccessControl` | [A01-Broken-Access-Control.md](./docs/labs/A01-Broken-Access-Control.md) |
+| A03:2021 - Injection | SQL Injection | `/A03-Injection/SqlInjection` | [A03-SQL-Injection.md](./docs/labs/A03-SQL-Injection.md) |
+| A03:2021 - Injection | Prompt Injection (IA) ⚠️ requer chave OpenAI | `/A03-Injection/PromptInjection` | (em elaboração) |
+| A09:2021 - Security Logging and Monitoring Failures | Falhas de logging e auditoria | `/A09-LoggingFailures/LoggingFailures` | [A09-Logging-Failures.md](./docs/labs/A09-Logging-Failures.md) |
 
-**Funcionalidades**:
-- 🔓 **Modo Vulnerável**: Demonstra SQL Injection ativo
-- 🔒 **Modo Seguro**: Mostra implementação com consultas parametrizadas
-- 📊 **Comparação de Código**: Visualiza as diferenças lado a lado
-- 🔍 **Query Viewer**: Exibe a query SQL executada em tempo real
-- 🎓 **Payloads Educacionais**: Exemplos de ataques para testar
+> ⚠️ **Prompt Injection exige uma chave da OpenAI.** A página `/A03-Injection/PromptInjection` chama a API da OpenAI (modelo `gpt-4o-mini`) e **não funciona sem uma `OPENAI_API_KEY` válida**: sem a chave, a página carrega mas nenhuma análise é executada. Por depender de um modelo pago e externo, **essa página não é usada na disciplina**, que trabalha apenas com modelo local. As demais páginas (A01, A03 SQL e A09) rodam 100% offline, só com os containers do `docker-compose`.
 
-**Objetivos de Aprendizado**:
-- Entender como ataques de SQL Injection funcionam
-- Explorar diferentes payloads de injeção
-- Comparar código vulnerável vs. código seguro em tempo real
-- Aprender sobre consultas parametrizadas e sua efetividade
-- Ver na prática como a proteção funciona
+### 🚧 Planejados (ainda sem página)
 
-**Payloads de Teste (Modo Vulnerável)**:
-```sql
-' OR '1'='1              # Retorna todos os produtos
-' OR 1=1 --              # Bypass do filtro
-' UNION SELECT "Id","Name","Password" FROM "Users" --  # Exfiltração de dados
-```
-
-**Experimente**:
-1. Teste os payloads no **modo vulnerável** e veja os ataques funcionarem
-2. Alterne para **modo seguro** e teste os mesmos payloads
-3. Observe como a parametrização bloqueia todos os ataques
-
-**Documentação**: [A03-SQL-Injection.md](./docs/labs/A03-SQL-Injection.md)
-
-### 🚧 Próximos Labs
-
-- **A01:2021** - Broken Access Control
 - **A02:2021** - Cryptographic Failures
 - **A04:2021** - Insecure Design
 - **A05:2021** - Security Misconfiguration
+- **A06:2021** - Vulnerable and Outdated Components
 - **A07:2021** - Identification and Authentication Failures
 - **A08:2021** - Software and Data Integrity Failures
-- **A09:2021** - Security Logging and Monitoring Failures
 - **A10:2021** - Server-Side Request Forgery (SSRF)
+
+## 🎓 Uso na Disciplina
+
+Este repositório é a **trilha de ataque** da disciplina Microservice and Web Engineering (FIAP), acervo [`josercf/FIAP-2026-2-3SI`](https://github.com/josercf/FIAP-2026-2-3SI). A ideia é o aluno **explorar a vulnerabilidade real aqui** antes de aprender a defesa no laboratório da aula:
+
+- **Aula 14** (OAuth 2.0, OIDC, JWT e RBAC) usa o lab **A01 - Broken Access Control** ([roteiro](./docs/labs/A01-Broken-Access-Control.md)). O aluno quebra o controle de acesso trocando o identificador do alvo, e só então implementa o 403 que mata esse ataque.
+- **Aula 15** (OWASP Top 10 para LLM) usa o lab **A03 - SQL Injection** ([roteiro](./docs/labs/A03-SQL-Injection.md)). O aluno explora a injeção clássica antes de ver o mesmo mecanismo atacar um modelo de linguagem, tornando concreta uma analogia que antes era só afirmada.
+- **A09 - Security Logging and Monitoring Failures** ([roteiro](./docs/labs/A09-Logging-Failures.md)) tem roteiro pronto e **ainda não está amarrado a uma aula**. Serve como estudo complementar e é candidato natural para o Checkpoint 3.
+
+A decisão de manter este repositório apartado está registrada na [`ADR-010`](https://github.com/josercf/FIAP-2026-2-3SI/blob/main/docs/adrs/ADR-010-owasp-security-lab-como-trilha-de-ataque.md) do acervo. Ele roda **separado de propósito**: por conter vulnerabilidades intencionais, fica em repositório próprio, isolado, e nunca é publicado junto com o material didático. O aluno sobe o ambiente localmente, ataca no modo vulnerável e observa a correção no modo seguro.
 
 ## 🛠️ Desenvolvimento Local
 
@@ -183,9 +172,14 @@ OWASP-Security-Lab/
 │       ├── Models/                 # Modelos de dados
 │       ├── Pages/                  # Razor Pages
 │       │   ├── Index.cshtml        # Dashboard principal
-│       │   └── A03-Injection/      # Lab SQL Injection
-│       ├── Services/               # Serviços de negócio
-│       │   └── Database/           # Serviços de banco
+│       │   ├── A01-BrokenAccessControl/  # Lab Broken Access Control
+│       │   ├── A03-Injection/      # Labs SQL Injection e Prompt Injection
+│       │   └── A09-LoggingFailures/      # Lab Logging Failures
+│       ├── Services/               # Serviços de negócio (versões Vulnerável + Segura)
+│       │   ├── AccessControl/      # Serviços do lab A01
+│       │   ├── Database/           # Serviços do lab A03 (SQL)
+│       │   ├── Logging/            # Serviços do lab A09
+│       │   └── OpenAI/             # Serviços do lab A03 (Prompt)
 │       ├── Program.cs              # Configuração da aplicação
 │       └── Dockerfile              # Dockerfile da aplicação
 ├── database/
@@ -211,11 +205,11 @@ OWASP-Security-Lab/
 
 O banco de dados é inicializado com:
 - **8 produtos** de exemplo
-- **4 usuários** com senhas em texto plano (para demonstração)
+- **5 usuários** com senhas em texto plano (para demonstração): 1 administrador e 4 usuários comuns (um deles inativo)
 
 **Credenciais de Teste**:
-- admin / admin123
-- john.doe / password123
+- admin@owasp-lab.local / admin123 (Admin)
+- john.doe@owasp-lab.local / password123 (User)
 
 ## 📚 Recursos Adicionais
 
